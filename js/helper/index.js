@@ -1,9 +1,6 @@
 var RENDERER, SCENE, CAMERA, LIGTH;
 var CONTROLS, CAMERAHELPER, AXESHELPER;
-// var CWIDTH = 800,
-//     CHEIGHT = 500,
-//     PWIDTH = 1920,
-//     PHEIGHT = 1080;
+
     var SCREEN_WIDTH = window.innerWidth;
     var SCREEN_HEIGHT = window.innerHeight;
     var aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
