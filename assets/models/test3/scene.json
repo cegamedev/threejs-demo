@@ -1,0 +1,21 @@
+{
+    "camInfo": {
+        "eye": "9.763 63.185 4.795",
+        "target": "12.177 0.064 -24.540"
+    },
+    "id": "0",
+    "gltfid": "node_World_-15834",
+    "outdoors": {
+        "id": "1",
+        "gltfid": "node_FloorPlan_-15844",
+        "placements": [{
+            "id": "55",
+            "name": "sofa_1",
+            "gltfid": "node__-44982",
+            "properties": {
+                "name": "testsofa1"
+            }
+        }],
+        "structure": {}
+    }
+}

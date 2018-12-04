@@ -1,0 +1,26 @@
+{
+    "camInfo": {
+        "eye": "3.241 20.332 -36.349",
+        "target": "9.611 0.341 -3.424"
+    },
+    "id": "0",
+    "gltfid": "node_World_-15834",
+    "outdoors": {
+        "id": "1",
+        "gltfid": "node_FloorPlan_-15844",
+        "routes": [{
+            "id": "50",
+            "gltfid": "node_Route_-43898"
+        }],
+        "structure": {
+            "walls": [{
+                "id": "-44254",
+                "gltfid": "node_CombinePrefabWall_-44254"
+            }],
+            "floors": [{
+                "id": "-44266",
+                "gltfid": "node_CombineFloor_-44266"
+            }]
+        }
+    }
+}
