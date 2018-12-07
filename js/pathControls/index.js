@@ -1,4 +1,4 @@
-var RENDERER, SCENE, CAMERA, labelRenderer;
+var RENDERER, SCENE, CAMERA, css2dRender, css3dRender;
 var CONTROLS, CAMERAHELPER, AXESHELPER, STATS;
 
 var SCREEN_WIDTH = window.innerWidth;
@@ -32,22 +32,48 @@ function initCamera() {
 //创建渲染器并将cnavas插入文档
 function initRender() {
     RENDERER = new THREE.WebGLRenderer({
-        antialias: true
+        antialias: true,
+        alpha: true
     });
     RENDERER.setPixelRatio(window.devicePixelRatio);
     RENDERER.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     RENDERER.autoClear = false;
+    RENDERER.setViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     // RENDERER.gammaOutput = true;
     //清除画面颜色
     // RENDERER.setClearColor(0x0080ff);
+    
+    RENDERER.setClearColor( 0x000000, 0 ); // required
+    RENDERER.domElement.style.position = 'absolute'; // required
+    RENDERER.domElement.style.top = 0;
+    RENDERER.domElement.style.zIndex = "1"; // required
     document.querySelector(".container").appendChild(RENDERER.domElement);
 
 
-    labelRenderer = new THREE.CSS2DRenderer();
-    labelRenderer.setSize(window.innerWidth, window.innerHeight);
-    labelRenderer.domElement.style.position = 'absolute';
-    labelRenderer.domElement.style.top = 0;
-    document.querySelector(".container").appendChild(labelRenderer.domElement);
+    css2dRender = new THREE.CSS2DRenderer();
+    css2dRender.setSize(window.innerWidth, window.innerHeight);
+    css2dRender.domElement.style.position = 'absolute';
+    css2dRender.domElement.style.top = 0;
+    document.querySelector(".container").appendChild(css2dRender.domElement);
+
+    css3dRender = new THREE.CSS3DRenderer();
+    css3dRender.setSize(window.innerWidth, window.innerHeight);
+    css3dRender.domElement.style.position = 'absolute';
+    css3dRender.domElement.style.top = 0;
+    document.querySelector(".container").appendChild(css3dRender.domElement);
+
+
+    //h到d的位移旋转缩放映射
+    // h.updateMatrixWorld();
+    //     var t = h.matrixWorld
+    //       , r = new THREE.Vector3
+    //       , i = new THREE.Vector3 
+    //       , n = new THREE.Quaternion;
+    //     t.decompose(r, n, i),
+    //     d.quaternion.copy(n),
+    //     d.position.copy(r).multiplyScalar(e.cssFactor);
+    //     var o = u / (h.geometry.parameters.width * i.x);
+    //     d.scale.set(1, 1, 1).multiplyScalar(e.cssFactor / o)
 }
 
 function initLight() {
@@ -67,7 +93,7 @@ function initLight() {
 }
 
 function initContr() {
-    CONTROLS = new THREE.OrbitControls(CAMERA);
+    CONTROLS = new THREE.OrbitControls(CAMERA,RENDERER.domElement);
 
     CONTROLS.minZoom = .15,
         CONTROLS.maxZoom = 8,
@@ -119,10 +145,11 @@ function animate() {
     RENDERER.clear();
 
     CAMERAHELPER.visible = false;
-    RENDERER.setViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    
     RENDERER.render(SCENE, CAMERA);
 
-    labelRenderer.render(SCENE, CAMERA);
+    // css2dRender.render(SCENE, CAMERA);
+    // css3dRender.render(SCENE, CAMERA);
 
     // CAMERAHELPER.visible = true;
     // RENDERER.setViewport( SCREEN_WIDTH/2, 0, SCREEN_WIDTH/2, SCREEN_HEIGHT );
@@ -244,132 +271,69 @@ function _createModel() {
         console.error(e);
     });
 
-    var curve = new THREE.CatmullRomCurve3([
+    var pointArr = [
+        new THREE.Vector3(-2, 0, 10),
         new THREE.Vector3(-10, 10, 10),
         new THREE.Vector3(-5, 5, 5),
         new THREE.Vector3(0, 0, 0),
         new THREE.Vector3(5, -5, 5),
         new THREE.Vector3(10, 0, 10)
-    ]);
-    var geometry = new THREE.Geometry();
-    var pointArr = curve.getPoints(5);
-    geometry.vertices = pointArr;
-    var material = new THREE.LineBasicMaterial({
-        color: 0xff0000,
-        linewidth: 5
-    });
-    var line = new THREE.Line(geometry, material);
-    SCENE.add(line);
+    ];
+    // var curve = new THREE.CatmullRomCurve3(pointArr);
+    // var geometry = new THREE.Geometry();
+    // geometry.vertices = curve.getPoints(50);
+    // var material = new THREE.LineBasicMaterial({
+    //     color: 0x00ff00,
+    // });
+    // var line = new THREE.Line(geometry, material);
+    // SCENE.add(line);
 
-    //sprite
-    // var sp = document.createElement("div");
-    // sp.style.backgroundColor = "#00ff00";
-    // sp.textContent = "hello";
-    // sp.style.width = "20rem";
-    // sp.style.height = "20rem";
-    // var object = new THREE.CSS3DSprite(sp);
+    // //sprite
+    // // var sp = document.createElement("div");
+    // // sp.style.backgroundColor = "#00ff00";
+    // // sp.textContent = "hello";
+    // // sp.style.width = "20rem";
+    // // sp.style.height = "20rem";
+    // // var object = new THREE.CSS3DSprite(sp);
 
-    var earthDiv = document.createElement('div');
-    earthDiv.className = 'label';
-    earthDiv.textContent = 'Earth';
-    // var object = new THREE.CSS2DObject(earthDiv.cloneNode(true));
-    // object.position.set(0,0,0);
-    // SCENE.add(object);
-    for (var i = 0; i < pointArr.length; i++) {
-        var object = new THREE.CSS2DObject(earthDiv.cloneNode(true));
-        var pos = pointArr[i];
-        object.position.set(pos.x,pos.y,pos.z);
-        SCENE.add(object);
-    }
+    // var earthDiv = document.createElement('div');
+    // earthDiv.className = 'label';
+    // earthDiv.style.backgroundColor = "#00ff00";
+    // earthDiv.style.width = "10px";
+    // earthDiv.style.height = "10px";
+    // for (var i = 0; i < pointArr.length; i++) {
+    //     // var object = new THREE.CSS2DObject(earthDiv.cloneNode(true));
+    //     // var object = new THREE.CSS3DObject(earthDiv.cloneNode(true));
+    //     var object = createSpriteShape(2);
+    //     var pos = pointArr[i];
+    //     object.position.set(pos.x,pos.y,pos.z);
+    //     SCENE.add(object);
+    // }
 
+    var topology = new Topology(THREE,SCENE);
+    topology.showByVectors(pointArr);
 
     console.log(SCENE);
 
-    setTimeout(() => {
-        var load3 = SCENE.getObjectByName("load3");
-        console.log(load3)
-        // load3.material=new THREE.MeshBasicMaterial({color: 0xff0000});
-        // load3.material.color.set("#ff0000");
-        load3.traverse(function (item) {
-            if (item instanceof THREE.Mesh) {
-                // item.geometry.dispose(); //删除几何体
-                // item.material.dispose(); //删除材质
-                // item.material.map.dispose();
-                item.material.forEach((m) => {
-                    m.color.set("#ff0000");
-                });
-
-                console.log(item);
-
-                //         edges = new THREE.EdgesHelper( item, 0x1535f7 );
-                // SCENE.add(edges);
-
-                // let cubeEdges = new THREE.EdgesGeometry(item.geometry, 1);
-                // let edgesMtl = new THREE.LineBasicMaterial({
-                //     color: 0x0000ff
-                // });
-                // edgesMtl.depthTest = false; //深度测试，若开启则是边框透明的效果
-                // let cubeLine = new THREE.LineSegments(cubeEdges, edgesMtl);
-                // SCENE.add(cubeLine);
-
-            }
-        });
-
-        setTimeout(() => {
-            self._aniAction(load3);
-            setTimeout(() => {
-                self._aniAction2(CAMERA);
-            }, 2000);
-        }, 2000);
-
-
-
-
-    }, 2000);
-
-
-
-
 }
 
-function _aniAction(obj) {
-    console.log("ani--> ", obj);
-    let tween = new TimelineMax()
-    tween.to(obj.scale, 1, { // 从 1 缩放至 2，花费 1 秒
-            x: 2,
-            y: 2,
-            z: 2,
-            ease: Power0.easeInOut, // 速度曲线
-            onStart: function () { // 监听动画开始 
-            },
-            onUpdate: function () { // 监听动画过程 
-            },
-            onComplete: function () { // 监听动画结束
-            }
-        })
-        .to(obj.position, 1, { // 缩放结束后，位移 x 至 10，花费 1 秒
-            x: 10,
-            y: 0,
-            z: 0
-        })
-    tween.to(obj.rotation, 0.7, { // 从 1 缩放至 2，花费 1 秒
-        y: -Math.PI,
-        ease: Expo.easeOut
-    });
+function createSpriteShape(w){
+    /*1、创建一个画布，记得设置画布的宽高，否则将使用默认宽高，有可能会导致图像显示变形*/
+     let canvas = document.createElement("canvas");
+     canvas.width = w;
+     canvas.height = w;
+     /*2、创建图形，这部分可以去看w3c canvas教程*/
+     let ctx = canvas.getContext("2d");
+     ctx.rect(0,0,w,w);
+     ctx.fillStyle = "#0000ff";
+     ctx.fill();
+     /*3、将canvas作为纹理，创建Sprite*/
+     let texture = new THREE.Texture(canvas);
+     texture.needsUpdate = true; //注意这句不能少
+     let material = new THREE.SpriteMaterial({map:texture});
+     let mesh = new THREE.Sprite(material);
+     /*4、放大图片，每个精灵有自己的大小，默认情况下都是很小的，如果你不放大，基本是看不到的*/
+     mesh.scale.set(0.25,0.25,1);
+     return mesh;
 }
 
-function _aniAction2(obj) {
-    console.log("ani--> ", obj);
-    let tween = new TimelineMax()
-    tween.to(obj.rotation, 1, { // 从 1 缩放至 2，花费 1 秒
-        x: -2.8518785861820892,
-        y: -0.17597279681605066,
-        z: -3.0894525332096032,
-    });
-    tween.to(obj.position, 1, { // 缩放结束后，位移 x 至 10，花费 1 秒
-        x: -17.962486849103726,
-        y: 23.99108493490684,
-        z: -79.48105227178657
-    })
-
-}
