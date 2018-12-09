@@ -67,7 +67,32 @@ class Topology {
         }
     }
     findShortPath(p1, p2, delY) {
-
+        var scope = this;
+        var startP = p1;
+        var endP = p2;
+        startP.y = startP.y +delY;
+        endP = endP.y + delY;
+        //映射到路径上
+        var startI = 0;
+        var endI = 0;
+        for(let i=0;i<scope.vectors.length;i++){
+            var startMin = scope.vectors[startI];
+            var endMin = scope.vectors[endI];
+            var startDisMin = _distance3d(startP,startMin);
+            var endDisMin = _distance3d(endP,endMin);
+            if(_distance3d(startP,scope.vectors[i]) < startDisMin){
+                startI = i;
+            }
+            if(_distance3d(endP,scope.vectors[i]) < endDisMin){
+                endI = i;
+            }
+        }
+        if(startI == endI){
+            return;
+        }
+        //查找所有路径
+        var roadList = [];
+        
     }
 }
 
