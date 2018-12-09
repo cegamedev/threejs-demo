@@ -20,9 +20,18 @@ class Topology {
     }
     show(showPoint = true) {
         var scope = this;
-
+        for(let i=0;i<scope.weightMap.length;i++){
+            var row = scope.weightMap[i];
+            for(let j=i;j<row.length;j++){
+                if(row[j]>0){
+                    var startP = scope.vectors[i];
+                    var endP = scope.vectors[j];
+                    scope.showByVectors([startP,endP],showPoint,i,j);
+                }
+            }
+        }
     }
-    showByVectors(vectors, showPoint = true) {
+    showByVectors(vectors,showPoint = true,startI=0,startJ=0) {
         var scope = this;
         if(vectors.length<2){
             return;
@@ -43,8 +52,14 @@ class Topology {
 
         if(showPoint){
             for(let i=0;i<vectors.length;i++){
-                // var dot = _createSpriteShape.call(scope,scope.dotWith);
-                var dot = _createSpriteText.call(scope,i);
+                var dot = null;
+                if(scope.debug){
+                    var txt = (startJ && i>0)?startJ:startI+i;
+                    dot = _createSpriteText.call(scope,txt);
+                }
+                else{
+                    dot = _createSpriteShape.call(scope,scope.dotWith);
+                }
                 dot.position.copy(vectors[i]);
                 scope.topologyDot.add(dot);
             }

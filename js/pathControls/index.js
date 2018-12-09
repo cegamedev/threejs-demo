@@ -310,8 +310,27 @@ function _createModel() {
     //     SCENE.add(object);
     // }
 
+    var pointArr = [
+        new THREE.Vector3(10, 0, 0),
+        new THREE.Vector3(15, 0, 0),
+        new THREE.Vector3(20, 0, 0),
+        new THREE.Vector3(20, 10, 0),
+        new THREE.Vector3(15, 10, 0),
+        new THREE.Vector3(10, 10, 0)
+    ];
+    var lineMap = [
+        [0,1,0,1,1,0],
+    [1,0,0,0,1,0],
+    [0,1,0,1,0,0],
+    [1,0,1,0,1,0],
+    [1,1,0,1,0,1],
+    [0,0,0,0,1,0]
+];
     var topology = new Topology(THREE,SCENE);
-    topology.showByVectors(pointArr);
+    topology.debug = true;
+    // topology.showByVectors(pointArr);
+    topology.create(pointArr,lineMap);
+    topology.show(true);
 
     console.log(SCENE);
 
