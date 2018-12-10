@@ -1,5 +1,46 @@
+class Node {
+    constructor(data) {
+        this.data = data;
+        this.parent = null;
+        this.children = [];
+    }
+    getNodeByData(data) {
+        var scope = this;
+        if (scope.data == data) {
+            return scope;
+        } else {
+            var targetNode = null;
+            for (let i = 0; i < scope.children.length; i++) {
+                targetNode = scope.children[i].getNodeByData(data);
+                if (targetNode && targetNode.data == data) {
+                    return targetNode;
+                }
+            }
+        }
+    }
+    getUpRoadByNode(node) {
+        var roadList = [];
+        while (node) {
+            roadList.unshift(node.data);
+            node = node.parent;
+        }
+        return roadList;
+    }
+    isInParents(node,data){
+        while(node){
+            if(node.parent && node.parent.data == data){
+                return true;
+            }
+            else {
+                node = node.parent;
+            }
+        }
+        return false;
+    }
+}
+
 class Topology {
-    constructor(THREE, scene, dotWith=2) {
+    constructor(THREE, scene, dotWith = 2) {
         this.vectors = []; //顶点集合
         this.weightMap = [
             []
@@ -20,20 +61,20 @@ class Topology {
     }
     show(showPoint = true) {
         var scope = this;
-        for(let i=0;i<scope.weightMap.length;i++){
+        for (let i = 0; i < scope.weightMap.length; i++) {
             var row = scope.weightMap[i];
-            for(let j=i;j<row.length;j++){
-                if(row[j]>0){
+            for (let j = i; j < row.length; j++) {
+                if (row[j] > 0) {
                     var startP = scope.vectors[i];
                     var endP = scope.vectors[j];
-                    scope.showByVectors([startP,endP],showPoint,i,j);
+                    scope.showByVectors([startP, endP], showPoint, i, j);
                 }
             }
         }
     }
-    showByVectors(vectors,showPoint = true,startI=0,startJ=0) {
+    showByVectors(vectors, showPoint = true, startI = 0, startJ = -1) {
         var scope = this;
-        if(vectors.length<2){
+        if (vectors.length < 2) {
             return;
         }
         scope.topology = new THREE.Group();
@@ -50,15 +91,14 @@ class Topology {
         scope.topology.add(line);
         scope.scene.add(scope.topology);
 
-        if(showPoint){
-            for(let i=0;i<vectors.length;i++){
+        if (showPoint) {
+            for (let i = 0; i < vectors.length; i++) {
                 var dot = null;
-                if(scope.debug){
-                    var txt = (startJ && i>0)?startJ:startI+i;
-                    dot = _createSpriteText.call(scope,txt);
-                }
-                else{
-                    dot = _createSpriteShape.call(scope,scope.dotWith);
+                if (scope.debug) {
+                    var txt = (startJ > -1 && i > 0) ? startJ : startI + i;
+                    dot = _createSpriteText.call(scope, txt);
+                } else {
+                    dot = _createSpriteShape.call(scope, scope.dotWith);
                 }
                 dot.position.copy(vectors[i]);
                 scope.topologyDot.add(dot);
@@ -66,33 +106,38 @@ class Topology {
             scope.scene.add(scope.topologyDot);
         }
     }
-    findShortPath(p1, p2, delY) {
+    findShortPath(p1, p2, delY1 = 0, delY2 = 0) {
         var scope = this;
         var startP = p1;
         var endP = p2;
-        startP.y = startP.y +delY;
-        endP = endP.y + delY;
+        startP.y = startP.y + delY1;
+        endP.y = endP.y + delY2;
         //映射到路径上
         var startI = 0;
         var endI = 0;
-        for(let i=0;i<scope.vectors.length;i++){
+        for (let i = 0; i < scope.vectors.length; i++) {
             var startMin = scope.vectors[startI];
             var endMin = scope.vectors[endI];
-            var startDisMin = _distance3d(startP,startMin);
-            var endDisMin = _distance3d(endP,endMin);
-            if(_distance3d(startP,scope.vectors[i]) < startDisMin){
+            var startDisMin = _distance3d(startP, startMin);
+            var endDisMin = _distance3d(endP, endMin);
+            if (_distance3d(startP, scope.vectors[i]) < startDisMin) {
                 startI = i;
             }
-            if(_distance3d(endP,scope.vectors[i]) < endDisMin){
+            if (_distance3d(endP, scope.vectors[i]) < endDisMin) {
                 endI = i;
             }
         }
-        if(startI == endI){
+        if (startI == endI) {
             return;
         }
-        //查找所有路径
-        var roadList = [];
-        
+
+        //构造路径树
+        var tree = new Node(startI);
+        _createTree.call(scope, startI, endI, tree);
+        //查找最短路径
+        var shortRoadList = _getShortRoad.call(scope, tree);
+
+        return shortRoadList;
     }
 }
 
@@ -143,7 +188,7 @@ function _createSpriteShape(w) {
     return mesh;
 }
 
-function _createSpriteText(text,s=1) {
+function _createSpriteText(text, s = 1) {
     let scope = this;
     let canvas = document.createElement("canvas");
     canvas.width = 64;
@@ -151,13 +196,66 @@ function _createSpriteText(text,s=1) {
     let ctx = canvas.getContext("2d");
     ctx.fillStyle = "#ff0000";
     ctx.font = "Bold 18px Arial";
-    ctx.fillText(text,10,20);
+    ctx.fillText(text, 10, 20);
     let texture = new scope.THREE.Texture(canvas);
     texture.needsUpdate = true;
     let material = new scope.THREE.SpriteMaterial({
         map: texture
     });
     let mesh = new scope.THREE.Sprite(material);
-    mesh.scale.set(3*s, 3*s, 1);
+    mesh.scale.set(3 * s, 3 * s, 1);
     return mesh;
+}
+
+function _createTree(startI, endI, tree) {
+    var scope = this;
+    var nodeList = [];
+    nodeList.push(startI);
+    debugger
+    while (nodeList.length > 0) {
+        var curNode = nodeList.shift();
+        if (curNode == endI) {
+            continue;
+        }
+        var node = tree.getNodeByData(curNode);
+        console.log(tree);
+        for (let j = 0; j < scope.weightMap[curNode].length; j++) {
+            if (scope.weightMap[curNode][j] > 0 && !node.isInParents(node,j)) {
+                nodeList.push(j);
+                var child = new Node(j);
+                child.parent = node;
+                node.children.push(child);
+            }
+        }
+
+    }
+}
+
+function _getShortRoad(tree) {
+    var scope = this;
+    var roadList = [];
+    var node = tree.getNodeByData(0);
+    while (node) {
+        roadList.push(tree.getUpRoadByNode(node));
+        node.data = -1;
+        node = tree.getNodeByData(0);
+    }
+    console.log(roadList);
+
+    var minIndex = 0;
+    var minLen = 0;
+    for (let i = 0; i < roadList.length; i++) {
+        var row = roadList[i];
+        var totalLen = 0;
+        for (let j = 0; j < row.length - 1; j++) {
+            var len = scope.weightMap[row[j]][row[j + 1]];
+            totalLen += len;
+        }
+        if (i == 0 || totalLen < minLen) {
+            minLen = totalLen;
+            minIndex = i;
+        }
+    }
+
+    return roadList[minIndex];
 }
