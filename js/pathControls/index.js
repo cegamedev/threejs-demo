@@ -42,8 +42,8 @@ function initRender() {
     // RENDERER.gammaOutput = true;
     //清除画面颜色
     // RENDERER.setClearColor(0x0080ff);
-    
-    RENDERER.setClearColor( 0x000000, 0 ); // required
+
+    RENDERER.setClearColor(0x000000, 0); // required
     RENDERER.domElement.style.position = 'absolute'; // required
     RENDERER.domElement.style.top = 0;
     RENDERER.domElement.style.zIndex = "1"; // required
@@ -93,7 +93,7 @@ function initLight() {
 }
 
 function initContr() {
-    CONTROLS = new THREE.OrbitControls(CAMERA,RENDERER.domElement);
+    CONTROLS = new THREE.OrbitControls(CAMERA, RENDERER.domElement);
 
     CONTROLS.minZoom = .15,
         CONTROLS.maxZoom = 8,
@@ -145,7 +145,7 @@ function animate() {
     RENDERER.clear();
 
     CAMERAHELPER.visible = false;
-    
+
     RENDERER.render(SCENE, CAMERA);
 
     // css2dRender.render(SCENE, CAMERA);
@@ -319,46 +319,45 @@ function _createModel() {
         new THREE.Vector3(10, 10, 0)
     ];
     var lineMap = [
-    [0,1,0,1,1,0],
-    [1,0,0,0,1,0],
-    [0,0,0,1,0,0],
-    [1,0,1,0,1,0],
-    [1,1,0,1,0,1],
-    [0,0,0,0,1,0]
-];
-    var topology = new Topology(THREE,SCENE);
+        [0, 1, 0, 1, 1, 0],
+        [1, 0, 0, 0, 1, 0],
+        [0, 0, 0, 1, 0, 0],
+        [1, 0, 1, 0, 1, 0],
+        [1, 1, 0, 1, 0, 1],
+        [0, 0, 0, 0, 1, 0]
+    ];
+    var topology = new Topology(THREE, SCENE);
     topology.debug = true;
     // topology.showByVectors(pointArr);
-    topology.create(pointArr,lineMap);
+    topology.create(pointArr, lineMap);
     topology.show(true);
 
-    setTimeout(()=>{
-        var roadList = topology.findShortPath(pointArr[0],pointArr[5]);
+    setTimeout(() => {
+        var roadList = topology.findShortPath(pointArr[0], pointArr[5]);
         console.log(roadList);
-    },1000);
-    
+    }, 1000);
+
 
     console.log(SCENE);
-
 }
 
-function createSpriteShape(w){
+function createSpriteShape(w) {
     /*1、创建一个画布，记得设置画布的宽高，否则将使用默认宽高，有可能会导致图像显示变形*/
-     let canvas = document.createElement("canvas");
-     canvas.width = w;
-     canvas.height = w;
-     /*2、创建图形，这部分可以去看w3c canvas教程*/
-     let ctx = canvas.getContext("2d");
-     ctx.rect(0,0,w,w);
-     ctx.fillStyle = "#0000ff";
-     ctx.fill();
-     /*3、将canvas作为纹理，创建Sprite*/
-     let texture = new THREE.Texture(canvas);
-     texture.needsUpdate = true; //注意这句不能少
-     let material = new THREE.SpriteMaterial({map:texture});
-     let mesh = new THREE.Sprite(material);
-     /*4、放大图片，每个精灵有自己的大小，默认情况下都是很小的，如果你不放大，基本是看不到的*/
-     mesh.scale.set(0.25,0.25,1);
-     return mesh;
+    let canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = w;
+    /*2、创建图形，这部分可以去看w3c canvas教程*/
+    let ctx = canvas.getContext("2d");
+    ctx.rect(0, 0, w, w);
+    ctx.fillStyle = "#0000ff";
+    ctx.fill();
+    /*3、将canvas作为纹理，创建Sprite*/
+    let texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true; //注意这句不能少
+    let material = new THREE.SpriteMaterial({ map: texture });
+    let mesh = new THREE.Sprite(material);
+    /*4、放大图片，每个精灵有自己的大小，默认情况下都是很小的，如果你不放大，基本是看不到的*/
+    mesh.scale.set(0.25, 0.25, 1);
+    return mesh;
 }
 
