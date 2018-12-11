@@ -4,35 +4,37 @@ class Node {
         this.parent = null;
         this.children = [];
     }
-    getNodeByData(data) {
-        // var scope = this;
-        // if (scope.data == data) {
-        //     return scope;
-        // } else {
-        //     var targetNode = null;
-        //     for (let i = 0; i < scope.children.length; i++) {
-        //         if (scope.children[i].data == data) {
-        //             return scope.children[i];
-        //         } else {
-        //             targetNode = scope.children[i].getNodeByData(data);
-        //         }
-        //     }
-        //     return targetNode;
-        // }
-
+    getNodeByData(data,num=1,curNum=1) {
         var scope = this;
+        var bfsList = [];
+        bfsList.push(scope);
+
         if (scope.data == data) {
-            return scope;
-        } else {
-            var targetNode = null;
-            for (let i = 0; i < scope.children.length; i++) {
-                targetNode = scope.children[i].getNodeByData(data);
-                if(targetNode && targetNode.data == data){
-                    return targetNode;
-                }
+            if(curNum >= num){
+                return scope;
             }
-            
+            else {
+                curNum++;
+            }
         }
+
+        while(bfsList.length>0){
+            var node = bfsList.shift();
+            for(let i=0;i<node.children.length;i++){
+                if (node.children[i].data == data) {
+                    if(curNum >= num){
+                        return node.children[i];
+                    }
+                    else {
+                        curNum++;
+                    }
+                }
+                bfsList.push(node.children[i]);
+            }
+        }
+        
+
+        
     }
     getUpRoadByNode(node) {
         var roadList = [];

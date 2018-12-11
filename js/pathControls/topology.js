@@ -4,17 +4,34 @@ class Node {
         this.parent = null;
         this.children = [];
     }
-    getNodeByData(data) {
+    //广度优先，获取第num次出现的节点
+    getNodeByData(data,num=1) {
         var scope = this;
+        var curNum = 1;
+        var bfsList = [];
+        bfsList.push(scope);
+
         if (scope.data == data) {
-            return scope;
-        } else {
-            var targetNode = null;
-            for (let i = 0; i < scope.children.length; i++) {
-                targetNode = scope.children[i].getNodeByData(data);
-                if (targetNode && targetNode.data == data) {
-                    return targetNode;
+            if(curNum >= num){
+                return scope;
+            }
+            else {
+                curNum++;
+            }
+        }
+
+        while(bfsList.length>0){
+            var node = bfsList.shift();
+            for(let i=0;i<node.children.length;i++){
+                if (node.children[i].data == data) {
+                    if(curNum >= num){
+                        return node.children[i];
+                    }
+                    else {
+                        curNum++;
+                    }
                 }
+                bfsList.push(node.children[i]);
             }
         }
     }
@@ -135,7 +152,7 @@ class Topology {
         var tree = new Node(startI);
         _createTree.call(scope, startI, endI, tree);
         //查找最短路径
-        var shortRoadList = _getShortRoad.call(scope, tree);
+        var shortRoadList = _getShortRoadByEndI.call(scope, tree, endI);
 
         return shortRoadList;
     }
@@ -209,16 +226,18 @@ function _createSpriteText(text, s = 1) {
 
 function _createTree(startI, endI, tree) {
     var scope = this;
+    var searchNumList = new Array(scope.weightMap.length);
+    searchNumList.fill(1);
     var nodeList = [];
     nodeList.push(startI);
-    debugger
+
     while (nodeList.length > 0) {
         var curNode = nodeList.shift();
         if (curNode == endI) {
             continue;
         }
-        var node = tree.getNodeByData(curNode);
-        console.log(tree);
+        var node = tree.getNodeByData(curNode,searchNumList[curNode]);
+        searchNumList[curNode]++;
         for (let j = 0; j < scope.weightMap[curNode].length; j++) {
             if (scope.weightMap[curNode][j] > 0 && !node.isInParents(node,j)) {
                 nodeList.push(j);
@@ -231,14 +250,15 @@ function _createTree(startI, endI, tree) {
     }
 }
 
-function _getShortRoad(tree) {
+function _getShortRoadByEndI(tree,endI) {
     var scope = this;
     var roadList = [];
-    var node = tree.getNodeByData(0);
+    var num = 1;
+    var node = tree.getNodeByData(endI,num);
     while (node) {
         roadList.push(tree.getUpRoadByNode(node));
-        node.data = -1;
-        node = tree.getNodeByData(0);
+        num++;
+        node = tree.getNodeByData(endI,num);
     }
     console.log(roadList);
 
