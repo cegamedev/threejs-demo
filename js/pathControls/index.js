@@ -246,7 +246,7 @@ function _createModel() {
     });
 
     loader.load('/assets/models/test3/Unity2GLTF.gltf', function (gltf) {
-        gltf.scene.name = "load3";
+        gltf.scene.name = "sofa";
         SCENE.add(gltf.scene);
         console.log(gltf);
     }, undefined, function (e) {
@@ -271,14 +271,22 @@ function _createModel() {
         console.error(e);
     });
 
-    var pointArr = [
-        new THREE.Vector3(-2, 0, 10),
-        new THREE.Vector3(-10, 10, 10),
-        new THREE.Vector3(-5, 5, 5),
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(5, -5, 5),
-        new THREE.Vector3(10, 0, 10)
-    ];
+    var geometryP = new THREE.SphereGeometry(1, 16, 16);
+    var materialP = new THREE.MeshBasicMaterial({
+        color: 0xff0000,
+        side: THREE.DoubleSide
+    });
+    var circleP = new THREE.Mesh(geometryP, materialP);
+    SCENE.add(circleP);
+
+    // var pointArr = [
+    //     new THREE.Vector3(-2, 0, 10),
+    //     new THREE.Vector3(-10, 10, 10),
+    //     new THREE.Vector3(-5, 5, 5),
+    //     new THREE.Vector3(0, 0, 0),
+    //     new THREE.Vector3(5, -5, 5),
+    //     new THREE.Vector3(10, 0, 10)
+    // ];
     // var curve = new THREE.CatmullRomCurve3(pointArr);
     // var geometry = new THREE.Geometry();
     // geometry.vertices = curve.getPoints(50);
@@ -318,6 +326,16 @@ function _createModel() {
         new THREE.Vector3(15, 10, 0),
         new THREE.Vector3(10, 10, 0)
     ];
+
+    // var curve = new THREE.CatmullRomCurve3(pointArr,false,"catmullrom",0.05);
+    // var geometry = new THREE.Geometry();
+    // geometry.vertices = curve.getPoints(60);
+    // var material = new THREE.LineBasicMaterial({
+    //     color: 0x00ff00,
+    // });
+    // var line = new THREE.Line(geometry, material);
+    // SCENE.add(line);
+
     var lineMap = [
         [0, 1, 0, 1, 1, 0],
         [1, 0, 0, 0, 1, 0],
@@ -335,7 +353,20 @@ function _createModel() {
     setTimeout(() => {
         var roadList = topology.findShortPath(pointArr[0], pointArr[5]);
         console.log(roadList);
-    }, 1000);
+        var vectors = [];
+        roadList.forEach((data) => {
+            vectors.push(pointArr[data]);
+        });
+        
+        var movePath = new MovePath(THREE, CONTROLS, circleP, vectors, 0, 300, (data) => {}, (data) => {
+            CONTROLS.enabled = false;
+            var firstMove = new MovePath(THREE, CONTROLS, CAMERA, vectors, 0, 300,()=>{},()=>{
+                CONTROLS.enabled = true;
+            });
+            firstMove.start();
+        });
+        movePath.start();
+    }, 5000);
 
 
     console.log(SCENE);
@@ -354,10 +385,11 @@ function createSpriteShape(w) {
     /*3、将canvas作为纹理，创建Sprite*/
     let texture = new THREE.Texture(canvas);
     texture.needsUpdate = true; //注意这句不能少
-    let material = new THREE.SpriteMaterial({ map: texture });
+    let material = new THREE.SpriteMaterial({
+        map: texture
+    });
     let mesh = new THREE.Sprite(material);
     /*4、放大图片，每个精灵有自己的大小，默认情况下都是很小的，如果你不放大，基本是看不到的*/
     mesh.scale.set(0.25, 0.25, 1);
     return mesh;
 }
-
