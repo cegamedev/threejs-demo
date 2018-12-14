@@ -1,5 +1,5 @@
-class CallBackEvent{
-    constructor(wEventType,mesh){
+class CallBackEvent {
+    constructor(wEventType, mesh) {
         this.type = wEventType;
         this.mesh = mesh;
     }
@@ -43,6 +43,7 @@ class WEvent {
         this.THREE = THREE;
         this.scene = scene;
         this.camera = camera;
+
         this.eventMap = {
             click: "click",
             mousemove: "mousemove"
@@ -59,6 +60,7 @@ class WEvent {
         this.mouse = new this.THREE.Vector2();
         initWindowEvent.call(this);
         // _animate.call(this);//先屏蔽掉，后续如果有性能问题再使用
+        this.debugCall = null;
     }
 
     on(eventType, targets, callBack) {
@@ -73,6 +75,13 @@ class WEvent {
             return;
         }
         removeEventTargets.call(this, this.eventMap[eventType], targets);
+    }
+
+    debug(callBack) {
+        if (callBack instanceof Function) {
+            this.debugCall = callBack
+            document.addEventListener("click", debugEvent.bind(this));
+        }
     }
 
 }
@@ -155,16 +164,15 @@ function rayCastPicker(wEventType) {
     // }
     // 事件遮挡情况
     objects = scope.scene.children;
-    var intersects = raycaster.intersectObjects(objects,true);//遍历所有对象本身以及孩子节点
+    var intersects = raycaster.intersectObjects(objects, true); //遍历所有对象本身以及孩子节点
     if (intersects.length > 0) {
         var tg = intersects[0].object;
         for (let j = 0; j < curTargets.length; j++) {
             if (curTargets[j].target == tg) {
                 curTargets[j].callBack(new CallBackEvent(wEventType, tg));
                 break;
-            }
-            else{
-                tg.traverseAncestors((parent)=>{
+            } else {
+                tg.traverseAncestors((parent) => {
                     if (curTargets[j].target == parent) {
                         curTargets[j].callBack(new CallBackEvent(wEventType, parent));
                         return;
@@ -172,6 +180,22 @@ function rayCastPicker(wEventType) {
                 });
             }
         }
+    }
+}
+
+function debugEvent(event) {
+    var scope = this;
+    event.preventDefault();
+
+    scope.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    scope.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    var raycaster = new scope.THREE.Raycaster();
+    raycaster.setFromCamera(scope.mouse, scope.camera);
+
+    var intersects = raycaster.intersectObjects(scope.scene.children, true); //遍历所有对象本身以及孩子节点
+    if (intersects.length > 0) {
+        scope.debugCall(intersects[0]);
     }
 }
 

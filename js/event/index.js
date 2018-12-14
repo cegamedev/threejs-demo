@@ -276,6 +276,10 @@ function _createModel() {
         });
     }, 10000);
 
+    wEvent.debug((data)=>{
+        console.log("click debug->",data);
+    });
+
 
 
     console.log(SCENE);
