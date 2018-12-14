@@ -81,16 +81,16 @@ function initLight() {
     var ambientLight = new THREE.AmbientLight(0xffffff); //设置颜色
     SCENE.add(ambientLight);
 
-    var hlight = new THREE.HemisphereLight(0xbbbbff, 0x444422);
-    hlight.position.set(0, 1, 0);
-    SCENE.add(hlight);
+    // var hlight = new THREE.HemisphereLight(0xbbbbff, 0x444422);
+    // hlight.position.set(0, 1, 0);
+    // SCENE.add(hlight);
 
-    var pointColor = 0xffffff;
-    var directionalLight = new THREE.DirectionalLight(pointColor);
-    directionalLight.position.set(6, 6, 6);
-    directionalLight.distance = 0;
-    directionalLight.intensity = 1;
-    SCENE.add(directionalLight);
+    // var pointColor = 0xffffff;
+    // var directionalLight = new THREE.DirectionalLight(pointColor);
+    // directionalLight.position.set(6, 6, 6);
+    // directionalLight.distance = 0;
+    // directionalLight.intensity = 1;
+    // SCENE.add(directionalLight);
 }
 
 function initContr() {
@@ -212,7 +212,7 @@ function _createModel() {
     var self = this;
 
     var loader = new THREE.GLTFLoader();
-    loader.load('/assets/models/test1/Unity2GLTF.gltf', function (gltf) {
+    loader.load('/bigAssets/hcfloor/Unity2GLTF.gltf', function (gltf) {
         SCENE.add(gltf.scene);
         console.log(gltf);
     }, undefined, function (e) {
