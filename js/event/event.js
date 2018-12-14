@@ -58,7 +58,7 @@ class WEvent {
         this.eventTargets = {};
         this.mouse = new this.THREE.Vector2();
         initWindowEvent.call(this);
-        // _animate.call(this);
+        // _animate.call(this);//先屏蔽掉，后续如果有性能问题再使用
     }
 
     on(eventType, targets, callBack) {
@@ -155,7 +155,7 @@ function rayCastPicker(wEventType) {
     // }
     // 事件遮挡情况
     objects = scope.scene.children;
-    var intersects = raycaster.intersectObjects(objects,true);
+    var intersects = raycaster.intersectObjects(objects,true);//遍历所有对象本身以及孩子节点
     if (intersects.length > 0) {
         var tg = intersects[0].object;
         for (let j = 0; j < curTargets.length; j++) {
@@ -173,16 +173,6 @@ function rayCastPicker(wEventType) {
             }
         }
     }
-
-    // for(let i=0;i<intersects.length;i++){
-    //     var tg = intersects[i].object;
-    //     for(let j=0;j<curTargets.length;j++){
-    //         if(curTargets[j].target == tg){
-    //             curTargets[j].callBack(wEventType,tg);
-    //             break;
-    //         }
-    //     }
-    // }
 }
 
 function _animate() {
