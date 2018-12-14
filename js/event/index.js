@@ -42,10 +42,11 @@ function initRender() {
     // RENDERER.gammaOutput = true;
     //清除画面颜色
     // RENDERER.setClearColor(0x0080ff);
-    
-    RENDERER.setClearColor( 0x000000, 0 ); // required
+
+    RENDERER.setClearColor(0x000000, 0); // required
     RENDERER.domElement.style.position = 'absolute'; // required
     RENDERER.domElement.style.top = 0;
+    RENDERER.domElement.style.left = 0;
     RENDERER.domElement.style.zIndex = "1"; // required
     document.querySelector(".container").appendChild(RENDERER.domElement);
 
@@ -93,7 +94,7 @@ function initLight() {
 }
 
 function initContr() {
-    CONTROLS = new THREE.OrbitControls(CAMERA,RENDERER.domElement);
+    CONTROLS = new THREE.OrbitControls(CAMERA, RENDERER.domElement);
 
     CONTROLS.minZoom = .15,
         CONTROLS.maxZoom = 8,
@@ -145,7 +146,7 @@ function animate() {
     RENDERER.clear();
 
     CAMERAHELPER.visible = false;
-    
+
     RENDERER.render(SCENE, CAMERA);
 
     // css2dRender.render(SCENE, CAMERA);
@@ -194,6 +195,8 @@ function _initEvent() {
     // function wcall(e){console.log(e)}
     // document.addEventListener("mousemove",wcall);
     // document.addEventListener("mouseover",wcall);
+
+
 }
 
 function _createSky() {
@@ -213,16 +216,70 @@ function _createModel() {
 
     var self = this;
 
+    var garden = null;
     var loader = new THREE.GLTFLoader();
     loader.load('/assets/models/test1/Unity2GLTF.gltf', function (gltf) {
+        gltf.scene.name="garden";
+        gltf.scene.position.set(0,0,-4);
         SCENE.add(gltf.scene);
-        console.log(gltf);
+        garden = gltf.scene;
     }, undefined, function (e) {
         console.error(e);
     });
 
+    var geometryP1 = new THREE.SphereGeometry(1, 16, 16);
+    var materialP1 = new THREE.MeshBasicMaterial({
+        color: 0xff0000,
+        side: THREE.DoubleSide
+    });
+    var circleP1 = new THREE.Mesh(geometryP1, materialP1);
+    circleP1.name = "circleP1";
+    SCENE.add(circleP1);
+
+    var geometryP2 = new THREE.SphereGeometry(1, 16, 16);
+    var materialP2 = new THREE.MeshBasicMaterial({
+        color: 0x00ff00,
+        side: THREE.DoubleSide
+    });
+    var circleP2 = new THREE.Mesh(geometryP2, materialP2);
+    circleP2.name = "circleP2";
+    circleP2.position.set(3,3,3);
+    SCENE.add(circleP2);
+
+    var geometryP3 = new THREE.SphereGeometry(1, 16, 16);
+    var materialP3 = new THREE.MeshBasicMaterial({
+        color: 0x0000ff,
+        side: THREE.DoubleSide
+    });
+    var circleP3 = new THREE.Mesh(geometryP3, materialP3);
+    circleP3.name = "circleP3";
+    circleP3.position.set(3,0,0);
+    SCENE.add(circleP3);
+
+    var wEvent = new WEvent(THREE, SCENE, CAMERA);
+    wEvent.on("click", [circleP1],(event)=>{
+        console.log(event);
+    });
+    wEvent.on("click", [circleP2],(event)=>{
+        console.log(event);
+    });
+    wEvent.on("mousemove", [circleP3],(event)=>{
+        console.log(event);
+    });
+
+    setTimeout(() => {
+        wEvent.off("click",[circleP1,circleP2]);
+        wEvent.off("mousemove",[circleP3]);
+        console.log("clear");
+        wEvent.on("click",[garden],(event)=>{
+            console.log(event);
+        });
+    }, 10000);
+
 
 
     console.log(SCENE);
+
+
 
 }
