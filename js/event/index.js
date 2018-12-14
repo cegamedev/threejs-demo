@@ -222,6 +222,7 @@ function _createModel() {
     });
 
 
+
     console.log(SCENE);
 
 }
