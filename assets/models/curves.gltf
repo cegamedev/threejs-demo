@@ -1,10 +1,17 @@
 {
     "asset" : {
-        "generator" : "Khronos Blender glTF 2.0 I/O",
+        "generator" : "Khronos Blender glTF 2.0 exporter",
         "version" : "2.0"
     },
-    "extensions" : {},
     "nodes" : [
+        {
+            "name" : "bizer",
+            "translation" : [
+                -0.20909929275512695,
+                -0.05108237266540527,
+                0.5363712310791016
+            ]
+        },
         {
             "name" : "Camera",
             "rotation" : [
@@ -28,22 +35,14 @@
                 0.570947527885437
             ],
             "scale" : [
-                1,
-                1,
+                1.0,
+                1.0,
                 0.9999999403953552
             ],
             "translation" : [
                 4.076245307922363,
                 5.903861999511719,
                 -1.0054539442062378
-            ]
-        },
-        {
-            "name" : "\u8d1d\u585e\u5c14\u66f2",
-            "translation" : [
-                1.8941948413848877,
-                1.166890025138855,
-                1.285532832145691
             ]
         }
     ],
@@ -52,9 +51,9 @@
         {
             "name" : "Scene",
             "nodes" : [
+                0,
                 2,
-                1,
-                0
+                1
             ]
         }
     ]

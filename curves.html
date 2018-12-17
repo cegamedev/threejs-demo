@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>threejs-demo</title>
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" />
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            font-size: 16px;
+            background-color: #000;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0px;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-btn" style="width:100px;height:100px;background:burlywood;position: fixed;z-index: 10;left: 0;top: 80px;color: #fff;">相机位置</div>
+    <div class="demo-add-btn" style="width:100px;height:100px;background:burlywood;position: fixed;z-index: 10;left: 0;top: 200px;color: #fff;">添加</div>
+    <div class="demo-one-btn" style="width:100px;height:100px;background:burlywood;position: fixed;z-index: 10;left: 0;top: 320px;color: #fff;">一次加载</div>
+    <div class="demo-d-btn" style="width:100px;height:100px;background:burlywood;position: fixed;z-index: 10;left: 0;top: 440px;color: #fff;">动态加载</div>
+    <div class="container" style="margin-left:115px;top:0;"></div>
+    <script src="lib/three.js"></script>
+    <script src="lib/CSS3DRenderer.js"></script>
+    <script src="lib/CSS2DRenderer.js"></script>
+    <script src="lib/GLTFLoader.js"></script>
+    <script src="lib/FirstPersonControls.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src="lib/TransformControls.js"></script>
+    <script src="lib/PointerLockControls.js"></script>
+    <script src="lib/stats.min.js"></script>
+    <script src="lib/TweenMax.min.js"></script>
+    <script src="js/common/utils.js"></script>
+    <script src="js/curves/index.js"></script>
+</body>
+
+</html>
